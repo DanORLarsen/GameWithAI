@@ -23,6 +23,7 @@ deaths = 0
 win = False
 speed = 3
 enemyMvoingUp = True
+pygame.display.set_caption('Game with AI')
 
 
 
@@ -91,7 +92,7 @@ while not done:
        #Player
         player = pygame.draw.rect(screen, color, pygame.Rect(playerx, playery, 40, 40))
         #Collide wall logic
-        ##TODO: Make this into method
+        ##TODO: Make this into method - Or find a way to use collide list
         if (player.colliderect(wall1)):
             die()
             deaths += 1
