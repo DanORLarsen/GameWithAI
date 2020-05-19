@@ -1,5 +1,4 @@
 import pygame as pygame
-from threading import Thread
 ##Inspiried by https://nerdparadise.com/programming/pygame
 
 #Variables
@@ -41,6 +40,7 @@ while not done:
         if (not win): 
             if pressed[pygame.K_UP]: 
                 playery -= speed
+                
             if pressed[pygame.K_DOWN]: 
                 playery += speed
 
