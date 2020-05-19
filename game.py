@@ -1,6 +1,26 @@
 import pygame as pygame
 ##Inspiried by https://nerdparadise.com/programming/pygame
 
+class Player(object):
+    def __init__(self, x , y):
+        self.speed = 3
+        self.x = x
+        self.y = y
+        self.rect = pygame.draw.rect(screen, (0, 0, 128), (x, y, 40, 40))
+
+    def handle_keys(self):
+        key = pygame.key.get_pressed()
+        if key[pygame.K_LEFT]:
+           self.rect.move_ip(1, 0)
+        if key[pygame.K_RIGHT]:
+           self.rect.move_ip(1, 0)
+        if key[pygame.K_UP]:
+           self.rect.move_ip(0, -1)
+        if key[pygame.K_DOWN]:
+           self.rect.move_ip(0, 1)
+    def draw(self, surface):
+        pygame.draw.rect(screen, (0, 0, 128), self.rect)
+
 #Variables
 width = 1200
 height = 800
@@ -104,6 +124,8 @@ while not done:
             #Collide with this enemy
 
        #Player
+        player2 = Player(30, 30)
+        player2.handle_keys()
         player = pygame.draw.rect(screen, color, pygame.Rect(playerx, playery, 40, 40))
         #Collide wall logic
         ##TODO: Make this into method - Or find a way to use collide list
@@ -207,6 +229,9 @@ while not done:
             enemyy = 500
         if (player.colliderect(goalWall)):
             win = True
+        player2.draw(screen)
+        
+        pygame.display.update()
         pygame.display.flip()
         clock.tick(60)
         pygame.display.flip()
