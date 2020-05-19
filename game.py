@@ -1,28 +1,28 @@
 import pygame as pygame
 from threading import Thread
 ##Inspiried by https://nerdparadise.com/programming/pygame
+
+#Variables
 width = 1200
 height = 800
 size = [width, height]
-
-
-pygame.init()
-screen = pygame.display.set_mode((size))
-done = False
-is_blue = True
+deaths = 0
 playerx = 30
 playery = 30
 enemyx = 400
 enemyy = 500
 goal = 1000
+done = False
+win = False
+speed = 3
+enemyMvoingUp = True
+
+pygame.init()
+screen = pygame.display.set_mode((size))
 myfont = pygame.font.SysFont("monospace", 16)
 myWinFont = pygame.font.SysFont("monospace", 45)
 WHITE = (255,255,255)
 clock = pygame.time.Clock()
-deaths = 0
-win = False
-speed = 3
-enemyMvoingUp = True
 pygame.display.set_caption('Game with AI')
 
 
@@ -30,7 +30,6 @@ pygame.display.set_caption('Game with AI')
 #Metgods
 def die():
     print("DEAD - Respawning")
-
 
 while not done:
         for event in pygame.event.get():
@@ -51,11 +50,22 @@ while not done:
             if pressed[pygame.K_RIGHT]: 
                 playerx += speed
         
-        
+        #ENEMY MOVEMENT
+        if(enemyMvoingUp):
+            enemyy -= 3
+        if(enemyy <= 20):
+            enemyMvoingUp = False
+        if(not enemyMvoingUp):
+            enemyy += 3
+        if(enemyy >= 720):
+            enemyMvoingUp = True
+
        
         screen.fill((220, 220, 220))
         color = (0, 128, 255)
         
+##GRAPHIC + Collition Logic
+
         #Goal
         goalWall = pygame.draw.rect(screen, (0,255,0), pygame.Rect(goal + 50, 0, 500, height))
         pygame.draw.line(screen, (0,255,0), (goal+100,0), (goal+100,height), 200)
@@ -81,13 +91,17 @@ while not done:
         wall12 = pygame.draw.rect(screen, (0,0,0), pygame.Rect(470, 250, 10, 600))
         wall13 = pygame.draw.rect(screen, (0,0,0), pygame.Rect(470, 0, 10, 175))
 
+        ##TODO: Create score that counts down along with time = faster = higher score
         #Deaths
         deathtext = myfont.render("Deaths {0}".format(deaths), 1, (0,0,0))
         screen.blit(deathtext, (12, 10))
-
         if (win):
             winText = myWinFont.render("YOU WON", 1, (0,0,0))
             screen.blit(winText, (500, 350))
+        
+        #Enemies
+        enemy = pygame.draw.rect(screen, (255,0,0), pygame.Rect(enemyx, enemyy, 50, 50))
+            #Collide with this enemy
 
        #Player
         player = pygame.draw.rect(screen, color, pygame.Rect(playerx, playery, 40, 40))
@@ -184,12 +198,6 @@ while not done:
             playery = 30
             enemyx = 400
             enemyy = 500
-        if (player.colliderect(goalWall)):
-            win = True
-
-        #Enemies
-        enemy = pygame.draw.rect(screen, (255,0,0), pygame.Rect(enemyx, enemyy, 50, 50))
-            #Collide with this enemy
         if (player.colliderect(enemy)):
             die()
             deaths += 1
@@ -197,18 +205,8 @@ while not done:
             playery = 30
             enemyx = 400
             enemyy = 500
-        
-    #ENEMY MOVEMENT
-        if(enemyMvoingUp):
-            enemyy -= 3
-        if(enemyy <= 20):
-            enemyMvoingUp = False
-        if(not enemyMvoingUp):
-            enemyy += 3
-        if(enemyy >= 720):
-            enemyMvoingUp = True
-
-
+        if (player.colliderect(goalWall)):
+            win = True
         pygame.display.flip()
         clock.tick(60)
-        pygame.display.flip() 
+        pygame.display.flip()
