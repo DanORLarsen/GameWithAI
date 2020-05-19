@@ -10,8 +10,7 @@ class Player(object):
     def draw(self, surface):
         pygame.draw.rect(screen, (0, 0, 128), self.rect)
     def createCollisionWith(self, something):#WORKS
-        if (self.rect.colliderect(something)):
-            return True
+        return self.rect.colliderect(something)
 
 #Variables
 width = 1200
@@ -116,114 +115,114 @@ while not done:
             #Collide with this enemy
 
        #Player
-        player2 = Player(playerx, playery)
+        player1 = Player(playerx, playery)
         #player = pygame.draw.rect(screen, color, pygame.Rect(playerx, playery, 40, 40))
         
         #Collide wall logic
         ##TODO: Make this into method - Or find a way to use collide list
         
             
-        if (player2.createCollisionWith(wall1)):
+        if (player1.createCollisionWith(wall1)):
             die()
             deaths += 1
             playerx = 30
             playery = 30
             enemyx = 400
             enemyy = 500
-        if (player2.createCollisionWith(wall2)):
+        if (player1.createCollisionWith(wall2)):
             die()
             deaths += 1
             playerx = 30
             playery = 30
             enemyx = 400
             enemyy = 500
-        if (player2.createCollisionWith(wall3)):
+        if (player1.createCollisionWith(wall3)):
             die()
             deaths += 1
             playerx = 30
             playery = 30
             enemyx = 400
             enemyy = 500
-        if (player2.createCollisionWith(wall4)):
+        if (player1.createCollisionWith(wall4)):
             die()
             deaths += 1
             playerx = 30
             playery = 30
             enemyx = 400
             enemyy = 500
-        if (player2.createCollisionWith(wall5)):
+        if (player1.createCollisionWith(wall5)):
             die()
             deaths += 1
             playerx = 30
             playery = 30
             enemyx = 400
             enemyy = 500
-        if (player2.createCollisionWith(wall6)):
+        if (player1.createCollisionWith(wall6)):
             die()
             deaths += 1
             playerx = 30
             playery = 30
             enemyx = 400
             enemyy = 500
-        if (player2.createCollisionWith(wall7)):
+        if (player1.createCollisionWith(wall7)):
             die()
             deaths += 1
             playerx = 30
             playery = 30
             enemyx = 400
             enemyy = 500
-        if (player2.createCollisionWith(wall8)):
+        if (player1.createCollisionWith(wall8)):
             die()
             deaths += 1
             playerx = 30
             playery = 30
             enemyx = 400
             enemyy = 500
-        if (player2.createCollisionWith(wall9)):
+        if (player1.createCollisionWith(wall9)):
             die()
             deaths += 1
             playerx = 30
             playery = 30
             enemyx = 400
             enemyy = 500
-        if (player2.createCollisionWith(wall10)):
+        if (player1.createCollisionWith(wall10)):
             die()
             deaths += 1
             playerx = 30
             playery = 30
             enemyx = 400
             enemyy = 500
-        if (player2.createCollisionWith(wall11)):
+        if (player1.createCollisionWith(wall11)):
             die()
             deaths += 1
             playerx = 30
             playery = 30
             enemyx = 400
             enemyy = 500
-        if (player2.createCollisionWith(wall12)):
+        if (player1.createCollisionWith(wall12)):
             die()
             deaths += 1
             playerx = 30
             playery = 30
             enemyx = 400
             enemyy = 500
-        if (player2.createCollisionWith(wall13)):
+        if (player1.createCollisionWith(wall13)):
             die()
             deaths += 1
             playerx = 30
             playery = 30
             enemyx = 400
             enemyy = 500
-        if (player2.createCollisionWith(enemy)):
+        if (player1.createCollisionWith(enemy)):
             die()
             deaths += 1
             playerx = 30
             playery = 30
             enemyx = 400
             enemyy = 500
-        if (player2.createCollisionWith(goalWall)):
+        if (player1.createCollisionWith(goalWall)):
             win = True
-        player2.draw(screen)
+        player1.draw(screen)
         
         pygame.display.update()
         pygame.display.flip()
