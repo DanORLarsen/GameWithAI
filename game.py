@@ -36,7 +36,7 @@ while not done:
                 if event.type == pygame.QUIT:
                     done = True
 
-                
+        ##TODO: Make this into a class for player, also same with enemy        
         pressed = pygame.key.get_pressed()
         if (not win): 
             if pressed[pygame.K_UP]: 
@@ -91,6 +91,7 @@ while not done:
        #Player
         player = pygame.draw.rect(screen, color, pygame.Rect(playerx, playery, 40, 40))
         #Collide wall logic
+        ##TODO: Make this into method
         if (player.colliderect(wall1)):
             die()
             deaths += 1
