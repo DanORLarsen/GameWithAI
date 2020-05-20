@@ -27,26 +27,23 @@ class Player(object):
     def getGoal(self, something):
         self.goalHit = something.left
 
-
-    def resetOrDie(self, number):
-        if(number == 1):
-            self.rect.x = 30
-            self.rect.y = 30
-        if(number == 2):
-            #Do nothing might need for AI evoulution (add death)
+    def printPoints(self):
+        print(self.colidePoints)
 
     def draw(self, surface):
         pygame.draw.rect(screen, (0, 0, 128), self.rect)
+        
     def createCollisionWith(self, something):#WORKS
         self.goalRect = something.left
         return self.rect.colliderect(something)
     
     def createCollisionWithMore(self, list):#WORKS
         for each in list:
-            self.colidePoints.append(each)
             if(self.rect.colliderect(each)):
-                self.resetOrDie(2)
                 return True
+    def getColidePoints(self, list):
+        for each in list:
+            self.colidePoints.append(each)
 
 
 #Variables
@@ -62,6 +59,7 @@ done = False
 win = False
 speed = 3
 enemyMvoingUp = True
+i = 0
 
 pygame.init()
 screen = pygame.display.set_mode((size))
@@ -164,6 +162,7 @@ while not done:
         ##TODO: Make this into method - Or find a way to use collide list
         
         if(player1.createCollisionWithMore(hostileList)):
+            print("!!TOTAL DEATH!!")
             done = True
             deaths += 1
             enemyX = 400
@@ -173,7 +172,12 @@ while not done:
         player1.draw(screen)
         #To give the AI the goal
         player1.getGoal(goalWall)
-        
+
+        #Simple solution to adding colitionpoints for AI.
+        i += 1
+        if (i == 1):
+            player1.getColidePoints(hostileList)
+            player1.printPoints()
 
         pygame.display.update()
         pygame.display.flip()
