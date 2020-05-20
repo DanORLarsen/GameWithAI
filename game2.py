@@ -17,6 +17,7 @@ class Player(object):
             if(self.rect.colliderect(each)):
                 return True
 
+    
 #Variables
 width = 1200
 height = 800
