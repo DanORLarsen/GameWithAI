@@ -5,29 +5,59 @@ class Player(object):
     def __init__(self, x, y):
         self.x = x
         self.y = y
+        self.speed = 3
+        self.goalHit = ""
+        self.colidePoints = []
         self.rect = pygame.draw.rect(screen, (0, 0, 128), (self.x, self.y, 40, 40))
+
+    def moveSet(self):
+        pressed = pygame.key.get_pressed()
+        if pressed[pygame.K_UP]: 
+            self.rect.y -= self.speed
+
+        if pressed[pygame.K_DOWN]: 
+            self.rect.y += self.speed
+
+        if pressed[pygame.K_LEFT]: 
+            self.rect.x -= self.speed
+
+        if pressed[pygame.K_RIGHT]: 
+            self.rect.x += self.speed
+
+    def getGoal(self, something):
+        self.goalHit = something.left
+
+
+    def resetOrDie(self, number):
+        if(number == 1):
+            self.rect.x = 30
+            self.rect.y = 30
+        if(number == 2):
+            #Do nothing might need for AI evoulution (add death)
 
     def draw(self, surface):
         pygame.draw.rect(screen, (0, 0, 128), self.rect)
     def createCollisionWith(self, something):#WORKS
+        self.goalRect = something.left
         return self.rect.colliderect(something)
     
     def createCollisionWithMore(self, list):#WORKS
         for each in list:
+            self.colidePoints.append(each)
             if(self.rect.colliderect(each)):
+                self.resetOrDie(2)
                 return True
 
-    
+
 #Variables
 width = 1200
 height = 800
 size = [width, height]
 deaths = 0
-playerx = 30
-playery = 30
 enemyX = 400
 enemyY = 500
 goal = 1000
+global done
 done = False
 win = False
 speed = 3
@@ -47,26 +77,16 @@ pygame.display.set_caption('Game with AI')
 def die():
     print("DEAD - Respawning")
 
+ #Player
+player1 = Player(30, 30)
+
 while not done:
         for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     done = True
 
         ##TODO: Make this into a class for player, also same with enemy        
-        pressed = pygame.key.get_pressed()
-        if (not win): 
-            if pressed[pygame.K_UP]: 
-                playery -= speed
-                
-            if pressed[pygame.K_DOWN]: 
-                playery += speed
-
-            if pressed[pygame.K_LEFT]: 
-                playerx -= speed
-
-            if pressed[pygame.K_RIGHT]: 
-                playerx += speed
-        
+      
         #ENEMY MOVEMENT
         if(enemyMvoingUp):
             enemyY -= 3
@@ -136,25 +156,25 @@ while not done:
         enemy = pygame.draw.rect(screen, (255,0,0), pygame.Rect(enemyX, enemyY, 50, 50))
             #Collide with this enemy
         hostileList.append(enemy)
-       #Player
-        player1 = Player(playerx, playery)
+        
+        player1.moveSet()
         #player = pygame.draw.rect(screen, color, pygame.Rect(playerx, playery, 40, 40))
         
         #Collide wall logic
         ##TODO: Make this into method - Or find a way to use collide list
         
         if(player1.createCollisionWithMore(hostileList)):
-            print("This works!")
-            die()
+            done = True
             deaths += 1
-            playerx = 30
-            playery = 30
             enemyX = 400
             enemyY = 500
         if (player1.createCollisionWith(goalWall)):
             win = True
         player1.draw(screen)
+        #To give the AI the goal
+        player1.getGoal(goalWall)
         
+
         pygame.display.update()
         pygame.display.flip()
         clock.tick(60)
