@@ -1,137 +1,109 @@
-import pygame as pygame
+import pygame
 import neat
-##Inspiried by https://nerdparadise.com/programming/pygame
-
+import os
+##Inspiried by https://nerdparadise.com/programming/pygame and https://www.youtube.com/watch?v=wQWWzBHUJWM&list=PLzMcBGfZo4-lwGZWXz5Qgta_YNX3_vLS2&index=6
 
 class Player(object):
-    
-    def __init__(self, x, y):
+    def __init__(self, x, y, screen):
         self.x = x
         self.y = y
+        self.speed = 3
+        self.goalHit = ""
+        self.number = 0
         self.colidePoints = []
-        self.alive = True
         self.rect = pygame.draw.rect(screen, (0, 0, 128), (self.x, self.y, 40, 40))
 
+    def moveSet(self):
+        pressed = pygame.key.get_pressed()
+        if pressed[pygame.K_UP]: 
+            self.rect.y -= self.speed
+
+        if pressed[pygame.K_DOWN]: 
+            self.rect.y += self.speed
+
+        if pressed[pygame.K_LEFT]: 
+            self.rect.x -= self.speed
+
+        if pressed[pygame.K_RIGHT]: 
+            self.rect.x += self.speed
+
+    def getGoal(self, something):
+        self.goalHit = something.left
+
+    def printPoints(self):
+        print(self.colidePoints)
+
     def draw(self, surface):
-        pygame.draw.rect(screen, (0, 0, 128), self.rect)
-    def createCollisionWith(self, something):#WORKS
-        return self.rect.colliderect(something)
-    
-    def die(self):
-        self.alive = False
-
-    def isAlive(self):
-        return self.alive
-
-    def get_data(self):
+        pygame.draw.rect(surface, (0, 0, 128), self.rect)
         
+    def createCollisionWith(self, something):#WORKS
+        self.goalRect = something.left
+        return self.rect.colliderect(something)
 
-#Creates collision and stores points for AI
-    def createCollisionWithMore(self, list):#WORKS
+    def increaseMilestomeNumber(self):
+        self.number += 1
+
+    def milestoleCollisionMore(self, list):
         for each in list:
-            self.colidePoints.append(each)
             if(self.rect.colliderect(each)):
                 return True
     
-    def get_reward(self):
-        return self.x
+    def createCollisionWithMore(self, list):#WORKS
+        for each in list:
+            if(self.rect.colliderect(each)):
+                return True
+    def getColidePoints(self, list):
+        for each in list:
+            self.colidePoints.append(each)
 
+    
+    
 
-#Variables
-width = 1200
-height = 800
-size = [width, height]
-deaths = 0
-playerx = 30
-playery = 30
-enemyX = 400
-enemyY = 500
-goal = 1000
-done = False
-win = False
-speed = 3
-enemyMvoingUp = True
-
-pygame.init()
-screen = pygame.display.set_mode((size))
-myfont = pygame.font.SysFont("monospace", 16)
-myWinFont = pygame.font.SysFont("monospace", 45)
-WHITE = (255,255,255)
-clock = pygame.time.Clock()
-pygame.display.set_caption('Game with AI')
-
-
-
-#Metgods
-def die():
-    print("DEAD - Respawning")
-
+    pygame.init()
+    
 def start(genomes, config):
-
-    #Variables
+    
+#Variables
     width = 1200
     height = 800
     size = [width, height]
+    screen = pygame.display.set_mode((size))
+    myfont = pygame.font.SysFont("monospace", 16)
+    myWinFont = pygame.font.SysFont("monospace", 45)
+    clock = pygame.time.Clock()
+    pygame.display.set_caption('Game with AI')
+
     deaths = 0
-    playerx = 30
-    playery = 30
     enemyX = 400
     enemyY = 500
     goal = 1000
+    global done
     done = False
     win = False
     speed = 3
     enemyMvoingUp = True
+    i = 0
 
-
-    # NEAT
-    nets = []
-    rect = []
-    player1 = Player(playerx, playery)
-    for id, g in genomes:
-        net = neat.nn.FeedForwardNetwork.create(g, config)
-        nets.append(net)
-        g.fitness = 0
-        
-        rect.append(player1)
     
-        
+    #NEAT - TODO: CREATE SO THEY CAN FIND THE Milestones (Use center)
 
-
-    pygame.init()
-    screen = pygame.display.set_mode((size))
-    myfont = pygame.font.SysFont("monospace", 16)
-    myWinFont = pygame.font.SysFont("monospace", 45)
-    WHITE = (255,255,255)
-    clock = pygame.time.Clock()
-    pygame.display.set_caption('Game with AI')
-
-
-
-    #Metgods
-    def die():
-        print("DEAD - Respawning")
+    nets = []
+    ge = []
+    players = []
+    
+    for genome_id, genome in genomes:
+        genome.fitness = 0  # start with fitness level of 0
+        net = neat.nn.FeedForwardNetwork.create(genome, config)
+        nets.append(net)
+        players.append(Player(30,30, screen))
+        ge.append(genome)
 
     while not done:
             for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         done = True
-
             ##TODO: Make this into a class for player, also same with enemy        
-            pressed = pygame.key.get_pressed()
-            if (not win): 
-                if pressed[pygame.K_UP]: 
-                    playery -= speed
-                    
-                if pressed[pygame.K_DOWN]: 
-                    playery += speed
-
-                if pressed[pygame.K_LEFT]: 
-                    playerx -= speed
-
-                if pressed[pygame.K_RIGHT]: 
-                    playerx += speed
-            
+        
             #ENEMY MOVEMENT
             if(enemyMvoingUp):
                 enemyY -= 3
@@ -146,17 +118,29 @@ def start(genomes, config):
             screen.fill((220, 220, 220))
             color = (0, 128, 255)
             
-
-
-
-
     ##GRAPHIC + Collition Logic
 
             hostileList = []
+            friendlyList = []
             #Goal
             goalWall = pygame.draw.rect(screen, (0,255,0), pygame.Rect(goal + 50, 0, 500, height))
             pygame.draw.line(screen, (0,255,0), (goal+100,0), (goal+100,height), 200)
-            
+
+            milestoneColor = (220,220,220)
+            #Milesstones for AI (Reinforcement + Survival of the fittest)
+            milestone1 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(210, 120, 160, 10))
+            milestone2 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(200, 220, 10, 80))
+            milestone3 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(10, 300, 90, 10))
+            milestone4 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(275, 380, 95, 10))
+            milestone5 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(370, 520, 10, 80))
+            milestone6 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(470, 170, 10, 80))
+            friendlyList.append(milestone1)
+            friendlyList.append(milestone2)
+            friendlyList.append(milestone3)
+            friendlyList.append(milestone4)
+            friendlyList.append(milestone5)
+            friendlyList.append(milestone6)
+
 
             #Obstacles
             #Boarder walls
@@ -171,13 +155,13 @@ def start(genomes, config):
             wall7 = pygame.draw.rect(screen, (0,0,0), pygame.Rect(100, 300, 275, 10))
             wall8 = pygame.draw.rect(screen, (0,0,0), pygame.Rect(0, 380, 275, 10))
             wall9 = pygame.draw.rect(screen, (0,0,0), pygame.Rect(0, 600, 370, 10))
-            
 
             #Middle pillars
             wall10 = pygame.draw.rect(screen, (0,0,0), pygame.Rect(370, 0, 10, 520))
             wall11 = pygame.draw.rect(screen, (0,0,0), pygame.Rect(370, 600, 10, 200))
             wall12 = pygame.draw.rect(screen, (0,0,0), pygame.Rect(470, 250, 10, 600))
             wall13 = pygame.draw.rect(screen, (0,0,0), pygame.Rect(470, 0, 10, 175))
+
             hostileList.append(wall1)
             hostileList.append(wall2)
             hostileList.append(wall3)
@@ -192,6 +176,7 @@ def start(genomes, config):
             hostileList.append(wall12)
             hostileList.append(wall13)
             
+            
 
             ##TODO: Create score that counts down along with time = faster = higher score
             #Deaths
@@ -205,39 +190,62 @@ def start(genomes, config):
             enemy = pygame.draw.rect(screen, (255,0,0), pygame.Rect(enemyX, enemyY, 50, 50))
                 #Collide with this enemy
             hostileList.append(enemy)
-            print(enemy.top)
-        #Player
-            #player = pygame.draw.rect(screen, color, pygame.Rect(playerx, playery, 40, 40))
             
-            #Collide wall logic
-            ##TODO: Make this into method - Or find a way to use collide list
-            
-            if(player1.createCollisionWithMore(hostileList)):
-                print("This works!")
-                player1.die()
-                break
-            if (player1.createCollisionWith(goalWall)):
-                win = True
-            player1.draw(screen)
-            
+            for x, player in enumerate(players):
+                player.moveSet()
+                #Collide wall logic + more
+                if(player.number <= 5):
+                    if(player.rect.colliderect(friendlyList[player.number])):
+                        ge[x].fitness += 10
+                        print(ge[x].fitness)
+                        player.increaseMilestomeNumber()
+
+                if(player.createCollisionWithMore(hostileList)):
+                    ge[x].fitness -= 1
+                    nets.pop(players.index(player))
+                    ge.pop(players.index(player))
+                    players.pop(players.index(player))
+                    deaths += 1
+                    enemyX = 400
+                    enemyY = 500
+                    if (deaths == 20): #Number of AI players per generation (So if all are dead = new Generation)
+                        done = True
+                if (player.createCollisionWith(goalWall)):
+                    ge[x].fitness = 2000
+                    done = True
+                player.draw(screen)
+                #To give the AI the goal
+                player.getGoal(goalWall)
+
+                #Simple solution to adding colitionpoints for AI.
+                i += 1
+                if (i == 1):
+                    player.getColidePoints(hostileList)
+
             pygame.display.update()
             pygame.display.flip()
             clock.tick(60)
             pygame.display.flip()
 
-if __name__ == "__main__":
-    # Set configuration file
-    config_path = './config-feedforward.txt'
-    config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction,
-                                neat.DefaultSpeciesSet, neat.DefaultStagnation, config_path)
 
-    # Create core evolution algorithm class
+
+def run(config_file):
+    config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction,
+                         neat.DefaultSpeciesSet, neat.DefaultStagnation,
+                         config_file)
+    
     p = neat.Population(config)
 
-    # Add reporter for fancy statistical result
+
+    # Add a stdout reporter to show progress in the terminal.
     p.add_reporter(neat.StdOutReporter(True))
     stats = neat.StatisticsReporter()
     p.add_reporter(stats)
+    #p.add_reporter(neat.Checkpointer(5))
+    winner = p.run(start,1)
 
-    # Run NEAT
-    p.run(start, 1)
+
+if __name__ == '__main__':
+    local_dir = os.path.dirname(__file__)
+    config_path = os.path.join(local_dir, 'config-feedforward.txt')
+    run(config_path)
