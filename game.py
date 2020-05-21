@@ -10,7 +10,9 @@ class Player(object):
         self.speed = 3
         self.goalHit = ""
         self.number = 0
+        self.distance = []
         self.colidePoints = []
+        self.milestonePoints = []
         self.rect = pygame.draw.rect(screen, (0, 0, 128), (self.x, self.y, 40, 40))
 
     def moveSet(self):
@@ -26,6 +28,7 @@ class Player(object):
 
         if pressed[pygame.K_RIGHT]: 
             self.rect.x += self.speed
+
 
     def getGoal(self, something):
         self.goalHit = something.left
@@ -43,11 +46,19 @@ class Player(object):
     def increaseMilestomeNumber(self):
         self.number += 1
 
+
     def milestoleCollisionMore(self, list):
         for each in list:
             if(self.rect.colliderect(each)):
                 return True
     
+    def getNextMilestone(self):
+        return self.milestonePoints[self.number]
+
+    def getMilestones(self, list):
+        for each in list:
+            self.milestonePoints.append(each)
+
     def createCollisionWithMore(self, list):#WORKS
         for each in list:
             if(self.rect.colliderect(each)):
@@ -104,7 +115,16 @@ def start(genomes, config):
                         done = True
             ##TODO: Make this into a class for player, also same with enemy        
         
+
+            for x, player in enumerate(players):
+                player.moveSet()
+                ge[x].fitness += 0.01
+                if(i == 1):
+                    output = nets[x].activate((player.x, player.y))
+
+                    output
             #ENEMY MOVEMENT
+
             if(enemyMvoingUp):
                 enemyY -= 3
             if(enemyY <= 20):
@@ -192,7 +212,6 @@ def start(genomes, config):
             hostileList.append(enemy)
             
             for x, player in enumerate(players):
-                player.moveSet()
                 #Collide wall logic + more
                 if(player.number <= 5):
                     if(player.rect.colliderect(friendlyList[player.number])):
@@ -217,10 +236,12 @@ def start(genomes, config):
                 #To give the AI the goal
                 player.getGoal(goalWall)
 
-                #Simple solution to adding colitionpoints for AI.
-                i += 1
-                if (i == 1):
-                    player.getColidePoints(hostileList)
+                #Simple solution to adding milestones to AI.
+                
+                if (i == 0):
+                    player.getMilestones(friendlyList)
+                    i+=1
+                    
 
             pygame.display.update()
             pygame.display.flip()
