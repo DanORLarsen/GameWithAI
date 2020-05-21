@@ -277,8 +277,8 @@ def start(genomes, config):
                         ge[x].fitness += 50
                        # print(ge[x].fitness)
                         player.increaseMilestomeNumber()
-                        if(player.number == 15):
-                             ge[x].fitness = 2000
+                        if(player.number >= 15):
+                             ge[x].fitness += 1200
                        # print(player.milestonePoints[player.number])
 
                 #Faster Reset
@@ -287,7 +287,8 @@ def start(genomes, config):
                     ge.pop(x)
                     players.pop(x)
                     deaths += 1
-
+                if(player.rect.centerx == 1055):
+                    ge[x].fitness += 2000
                 if(player.createCollisionWithMore(hostileList)):
                     ge[x].fitness -= 5
                     nets.pop(x)
