@@ -149,13 +149,13 @@ def start(genomes, config):
                     if (output[0] > 0):
                         ge[x].fitness += 0.0
                         player.aiMoveRight()
-                    if (output[0] < 0):
+                    if (output[1] > 0):
                         ge[x].fitness += 0.0
                         player.aiMoveLeft()
-                    if (output[1] < 0):
+                    if (output[2] > 0):
                         ge[x].fitness += 0.0
                         player.aiMoveUp()
-                    if (output[1] > 0):
+                    if (output[3] > 0):
                         ge[x].fitness += 0.0
                         player.aiMoveDown()
                     
@@ -187,10 +187,16 @@ def start(genomes, config):
             milestone0 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(210, 10, 10, 120))
             milestone1 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(210, 120, 160, 10))
             milestone2 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(200, 220, 10, 80))
-            milestone3 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(10, 300, 90, 10))
-            milestone4 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(275, 380, 95, 10))
-            milestone5 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(370, 520, 10, 80))
-            milestone6 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(470, 170, 10, 80))
+            milestone3 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(210, 220, 160, 10))
+            milestone4 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(140, 220, 10, 80))
+            milestone5 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(200, 300, 10, 80))
+            milestone6 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(275, 470, 95, 10))
+            milestone7 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(375, 380, 95, 10))
+            milestone8 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(10, 300, 90, 10))
+            milestone9 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(275, 380, 95, 10))
+            milestone10 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(370, 520, 10, 80))
+            milestone11 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(470, 170, 10, 80))
+
             friendlyList.append(milestone0)
             friendlyList.append(milestone1)
             friendlyList.append(milestone2)
@@ -198,6 +204,11 @@ def start(genomes, config):
             friendlyList.append(milestone4)
             friendlyList.append(milestone5)
             friendlyList.append(milestone6)
+            friendlyList.append(milestone7)
+            friendlyList.append(milestone8)
+            friendlyList.append(milestone9)
+            friendlyList.append(milestone10)
+            friendlyList.append(milestone11)
 
             #Obstacles
             #Boarder walls
@@ -250,15 +261,16 @@ def start(genomes, config):
             for x, player in enumerate(players):
                 if(player.milestonePoints == []):
                     player.getMilestones(friendlyList)
+                    print(player.milestonePoints)
                 #Collide wall logic + more
-                if(player.number <= 6):
+                if(player.number <= 11):
                     if(player.rect.colliderect(friendlyList[player.number])):
                         ge[x].fitness += 100
                         print(ge[x].fitness)
                         player.increaseMilestomeNumber()
 
                 if(player.createCollisionWithMore(hostileList)):
-                    ge[x].fitness -= 0
+                    ge[x].fitness -= 5
                     nets.pop(x)
                     ge.pop(x)
                     players.pop(x)
@@ -279,7 +291,7 @@ def start(genomes, config):
             tick_counter +=1
             pygame.display.update()
             pygame.display.flip()
-            clock.tick(200)
+            clock.tick(400)
             pygame.display.flip()
 
 
@@ -297,7 +309,7 @@ def run(config_file):
     stats = neat.StatisticsReporter()
     p.add_reporter(stats)
     #p.add_reporter(neat.Checkpointer(5))
-    winner = p.run(start,35)
+    winner = p.run(start,55)
 
 
 if __name__ == '__main__':
