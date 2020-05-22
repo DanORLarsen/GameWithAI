@@ -136,29 +136,31 @@ def start(genomes, config):
             for x, player in enumerate(players):
                 #Motivation
                 ge[x].fitness -= 0.01
+                player.moveSet()
                 if( tick_counter >= 3):
                     #output = nets[x].activate([abs(player.getNextMilestone().centery - player.rect.centery),abs(player.getNextMilestone().centerx - player.rect.centerx), player.rect.centerx, player.rect.centery])
-                    output = nets[x].activate([player.getNextMilestone().centerx - player.rect.centerx , player.getNextMilestone().centery - player.rect.centery, player.rect.centerx, player.rect.centery])
+                    if(ge[x].fitness < 2000):
+                        output = nets[x].activate([player.getNextMilestone().centerx - player.rect.centerx , player.getNextMilestone().centery - player.rect.centery, player.rect.centerx, player.rect.centery])
 
-                    if(tick_counter%400 == 0):
-                        string_in_string = "player - {} Distance ({}, {}), \nPos ({}, {}) \n({}, {})".format(x,player.getNextMilestone().centerx - player.rect.centerx, player.getNextMilestone().centery - player.rect.centery, player.rect.centerx, player.rect.centery, player.getNextMilestone().centerx, player.getNextMilestone().centery)
+                        if(tick_counter%400 == 0):
+                            string_in_string = "player - {} Distance ({}, {}), \nPos ({}, {}) \n({}, {})".format(x,player.getNextMilestone().centerx - player.rect.centerx, player.getNextMilestone().centery - player.rect.centery, player.rect.centerx, player.rect.centery, player.getNextMilestone().centerx, player.getNextMilestone().centery)
 
-                        #print(string_in_string)
-                        #print(x, output)
+                            #print(string_in_string)
+                            #print(x, output)
 
-                    #print(output)
-                    if (output[0] > 0):
-                        ge[x].fitness += 0.0
-                        player.aiMoveRight()
-                    if (output[1] > 0):
-                        ge[x].fitness += 0.0
-                        player.aiMoveLeft()
-                    if (output[2] > 0):
-                        ge[x].fitness += 0.0
-                        player.aiMoveUp()
-                    if (output[3] > 0):
-                        ge[x].fitness += 0.0
-                        player.aiMoveDown()
+                        #print(output)
+                        if (output[0] > 0):
+                            ge[x].fitness += 0.0
+                            player.aiMoveRight()
+                        if (output[1] > 0):
+                            ge[x].fitness += 0.0
+                            player.aiMoveLeft()
+                        if (output[2] > 0):
+                            ge[x].fitness += 0.0
+                            player.aiMoveUp()
+                        if (output[3] > 0):
+                            ge[x].fitness += 0.0
+                            player.aiMoveDown()
                     
             #ENEMY MOVEMENT
 
@@ -180,10 +182,11 @@ def start(genomes, config):
             hostileList = []
             friendlyList = []
             #Goal
-            goalWall = pygame.draw.rect(screen, (0,255,0), pygame.Rect(goal + 50, 0, 500, height%4))
+            goalWall = pygame.draw.rect(screen, (0,255,0), pygame.Rect(1050, 0, 500, 450))
             pygame.draw.line(screen, (0,255,0), (goal+100,0), (goal+100,height), 200)
 
-            milestoneColor = (0,220,220)
+            #Same as bg color (Change for vissible milestones)
+            milestoneColor = (220,220,220)
             #Milesstones for AI (Reinforcement + Survival of the fittest)
             milestone0 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(210, 10, 10, 120))
             milestone1 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(210, 120, 160, 10))
@@ -196,7 +199,8 @@ def start(genomes, config):
             milestone8 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(275, 510, 95, 10))
             milestone9 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(370, 520, 10, 80))
             milestone10 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(375, 380, 95, 10))
-            milestone11 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(470, 170, 10, 100))
+            milestone11 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(470, 170, 10, 90))
+            milestone12 = pygame.draw.rect(screen, (0,255,0), pygame.Rect(1050, 170, 10, 90))
             #Adding milestone helpers
             helper0 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(100, 300, 10, 90)) #after milestone5
             helper1 = pygame.draw.rect(screen, milestoneColor, pygame.Rect(375, 510, 95, 10)) #after milestone9
@@ -217,7 +221,7 @@ def start(genomes, config):
             friendlyList.append(milestone10)
             friendlyList.append(helper2)
             friendlyList.append(milestone11)
-            friendlyList.append(goalWall)
+            friendlyList.append(milestone12)
 
             #Obstacles
             #Boarder walls
@@ -256,7 +260,7 @@ def start(genomes, config):
 
             ##TODO: Create score that counts down along with time = faster = higher score
             #Deaths
-            deathtext = myfont.render("Dead {0}/1000".format(deaths), 1, (0,0,0))
+            deathtext = myfont.render("Dead {0}/300".format(deaths), 1, (0,0,0))
             screen.blit(deathtext, (40, 700))
             if (win):
                 winText = myWinFont.render("YOU WON", 1, (0,0,0))
@@ -272,11 +276,12 @@ def start(genomes, config):
                     player.getMilestones(friendlyList)
                     
                 #Collide wall logic + more
-                if(player.number <= 22):
+                if(player.number <= 15):
                     if(player.rect.colliderect(player.milestonePoints[player.number])):
                         ge[x].fitness += 50
                        # print(ge[x].fitness)
-                        player.increaseMilestomeNumber()
+                        if(player.number != 16):
+                            player.increaseMilestomeNumber()
                         if(player.number >= 15):
                              ge[x].fitness += 1200
                        # print(player.milestonePoints[player.number])
@@ -289,13 +294,15 @@ def start(genomes, config):
                     deaths += 1
                 if(player.rect.centerx == 1055):
                     ge[x].fitness += 2000
+                    done = True
+                    win = True
                 if(player.createCollisionWithMore(hostileList)):
                     ge[x].fitness -= 5
                     nets.pop(x)
                     ge.pop(x)
                     players.pop(x)
                     deaths += 1
-                    if (deaths == 1000): #Number of AI players per generation (So if all are dead = new Generation)
+                    if (deaths == 300): #Number of AI players per generation (So if all are dead = new Generation)
                         done = True
                 if (player.createCollisionWith(goalWall)):
                     ge[x].fitness = 2000
