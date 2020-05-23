@@ -129,17 +129,15 @@ def start(genomes, config):
                         pygame.quit()
                         quit()
                     if pressed[pygame.K_ESCAPE]:
-                        done = True
-            ##TODO: Make this into a class for player, also same with enemy        
-        
+                        done = True        
 
             for x, player in enumerate(players):
                 #Motivation
                 ge[x].fitness -= 0.01
                 player.moveSet()
                 if( tick_counter >= 3):
-                    #output = nets[x].activate([abs(player.getNextMilestone().centery - player.rect.centery),abs(player.getNextMilestone().centerx - player.rect.centerx), player.rect.centerx, player.rect.centery])
                     if(ge[x].fitness < 2000):
+                        #TODO: Add nearest wall using array of collidepoints to notify the position of the current nearest wall in all dirrections (center to left, center to right...)
                         output = nets[x].activate([player.getNextMilestone().centerx - player.rect.centerx , player.getNextMilestone().centery - player.rect.centery, player.rect.centerx, player.rect.centery])
 
                         if(tick_counter%400 == 0):
