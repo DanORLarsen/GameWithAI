@@ -258,7 +258,7 @@ def start(genomes, config):
 
             ##TODO: Create score that counts down along with time = faster = higher score
             #Deaths
-            deathtext = myfont.render("Dead {0}/300".format(deaths), 1, (0,0,0))
+            deathtext = myfont.render("Dead {0}/750".format(deaths), 1, (0,0,0))
             screen.blit(deathtext, (40, 700))
             if (win):
                 winText = myWinFont.render("YOU WON", 1, (0,0,0))
@@ -300,7 +300,7 @@ def start(genomes, config):
                     ge.pop(x)
                     players.pop(x)
                     deaths += 1
-                    if (deaths == 300): #Number of AI players per generation (So if all are dead = new Generation)
+                    if (deaths == 750): #Number of AI players per generation (So if all are dead = new Generation)
                         done = True
                 if (player.createCollisionWith(goalWall)):
                     ge[x].fitness = 2000
